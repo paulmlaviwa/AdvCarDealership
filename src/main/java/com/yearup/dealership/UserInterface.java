@@ -80,6 +80,9 @@ public class UserInterface {
                 case 9:
                     processRemoveVehicleRequest();
                     break;
+                case 10:
+                    processCreateContractRequest();
+                    break;
                 case 0:
                     System.out.println("Exiting the program. Goodbye!");
                     break;
@@ -103,6 +106,7 @@ public class UserInterface {
         System.out.println("7. Get all vehicles");
         System.out.println("8. Add vehicle");
         System.out.println("9. Remove vehicle");
+        System.out.println("10. Create contract");
         System.out.println("0. Exit");
     }
 
@@ -269,6 +273,93 @@ public class UserInterface {
             }
         }
         return null; // Vehicle not found
+    }
+
+    private void processCreateContractRequest() {
+        System.out.println("Enter contract details:");
+        System.out.print("Contract type (SALES/LEASE): ");
+        String contractType = scanner.next().toUpperCase();
+
+        Contract contract;
+        if ("SALES".equals(contractType)) {
+            contract = createSalesContract();
+        } else if ("LEASE".equals(contractType)) {
+            contract = createLeaseContract();
+        } else {
+            System.out.println("Invalid contract type. Please enter SALES or LEASE.");
+            return;
+        }
+
+        // Saving the contract using #ContractDataManager
+        ContractDataManager contractDataManager = new ContractDataManager();
+        contractDataManager.saveContract(contract);
+
+        // Removing the vehicle from inventory
+        dealership.removeVehicle(contract.getVehicle());
+
+        // Saving the updated dealership
+        saveDealership();
+
+        System.out.println("Contract created successfully!");
+    }
+
+    private LeaseContract createLeaseContract() {
+        System.out.print("Enter contract date: ");
+        String date = scanner.next();
+
+        System.out.print("Enter customer name: ");
+        String customerName = scanner.next();
+
+        System.out.print("Enter customer email: ");
+        String customerEmail = scanner.next();
+
+        System.out.println("Available vehicles:");
+        displayVehicles(dealership.getAllVehicles());
+
+        System.out.print("Enter VIN of the vehicle to be leased: ");
+        int vin = scanner.nextInt();
+        Vehicle vehicle = findVehicleByVIN(vin);
+
+        System.out.print("Enter expected ending value: ");
+        double expectedEndingValue = scanner.nextDouble();
+
+        System.out.print("Enter lease fee: ");
+        double leaseFee = scanner.nextDouble();
+
+        return new LeaseContract(date, customerName, customerEmail, vehicle, expectedEndingValue, leaseFee);
+    }
+
+
+    private SalesContract createSalesContract() {
+        System.out.print("Enter contract date: ");
+        String date = scanner.next();
+
+        System.out.print("Enter customer name: ");
+        String customerName = scanner.next();
+
+        System.out.print("Enter customer email: ");
+        String customerEmail = scanner.next();
+
+        System.out.println("Available vehicles:");
+        displayVehicles(dealership.getAllVehicles());
+
+        System.out.print("Enter VIN of the vehicle to be sold: ");
+        int vin = scanner.nextInt();
+        Vehicle vehicle = findVehicleByVIN(vin);
+
+        System.out.print("Enter sales tax amount: ");
+        double salesTaxAmount = scanner.nextDouble();
+
+        System.out.print("Enter recording fee: ");
+        double recordingFee = scanner.nextDouble();
+
+        System.out.print("Enter processing fee: ");
+        double processingFee = scanner.nextDouble();
+
+        System.out.print("Enter finance option (true/false): ");
+        boolean financeOption = scanner.nextBoolean();
+
+        return new SalesContract(date, customerName, customerEmail, vehicle, salesTaxAmount, recordingFee, processingFee, financeOption);
     }
 
 }
