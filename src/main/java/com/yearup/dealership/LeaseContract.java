@@ -27,7 +27,7 @@ public class LeaseContract extends Contract {
         return monthlyPayment;
     }
 
-    
+
     public double getExpectedEndingValue() {
         return expectedEndingValue;
     }
@@ -44,4 +44,3 @@ public class LeaseContract extends Contract {
         this.leaseFee = leaseFee;
     }
 }
-
